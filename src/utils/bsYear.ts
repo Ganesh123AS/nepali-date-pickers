@@ -1,4 +1,13 @@
 import {
+    baseMonthDays1990,
+    baseMonthDays1991,
+    baseMonthDays1992,
+    baseMonthDays1993,
+    baseMonthDays1994,
+    baseMonthDays1995,
+    baseMonthDays1996,
+    baseMonthDays1997,
+    baseMonthDays1998,
     baseMonthDays1999,
     baseMonthDays2000,
     
@@ -158,15 +167,15 @@ export const BaseMonthDaysByYear: Record<number, Record<number, number>> = {
     // 1989: Days366Default,                   // leap year
 
 
-    // 1990: baseMonth365DaysDefault,
-    // 1991: baseMonth365DaysDefault,
-    // 1992: baseMonth365DaysDefault,
-    // 1993: Days366Default,                   // leap year
-    // 1994: baseMonth365DaysDefault,
-    // 1995: baseMonth365DaysDefault,
-    // 1996: baseMonth365DaysDefault,
-    // 1997: Days366Default,                   // leap year
-    // 1998: baseMonth365DaysDefault,
+    1990: baseMonthDays1990,
+    1991: baseMonthDays1991,
+    1992: baseMonthDays1992,
+    1993: baseMonthDays1993,                   // leap year
+    1994: baseMonthDays1994,
+    1995: baseMonthDays1995,
+    1996: baseMonthDays1996,
+    1997: baseMonthDays1997,                   // leap year
+    1998: baseMonthDays1998,
     1999: baseMonthDays1999,
 
     2000: baseMonthDays2000,
