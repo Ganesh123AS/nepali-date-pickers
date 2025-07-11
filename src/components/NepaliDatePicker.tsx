@@ -5,6 +5,7 @@ import { NepaliCalendarProps } from '../types/types';
 import { getBSStartDay } from '../utils/calenderStartDay';
 import { days, adDays } from '../constants/days';
 import { months, adMonths } from '../constants/months';
+import { convertADToBS, convertBSToAD } from '../utils/dateConversion';
 
 export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     label,
@@ -30,10 +31,11 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     const getCurrentBSDate = () => {
         const today = new Date();
         const gregorianDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        const bsDate = ADToBS(gregorianDate);
-        const [year, month, day] = bsDate.split('-').map(Number);
-        return { year, month, day };
+        const bsDate = convertADToBS(gregorianDate);
+        if (!bsDate) return { year: 0, month: 0, day: 0 };
+        return { year: bsDate.year, month: bsDate.month, day: bsDate.day };
     };
+
 
     const currentADDate = getCurrentADDate();
     const currentBSDate = getCurrentBSDate();
@@ -71,57 +73,74 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     const filteredYears = calendarType === 'AD'
         ? adYears.filter((y) => (!maxAgeObj || y <= maxAgeObj.year) && (!maxDateObj || y <= maxDateObj.year))
         : availableYears.filter((y) => (!maxAgeObj || y <= maxAgeObj.year) && (!maxDateObj || y <= maxDateObj.year));
-    
+
     const getADDaysInMonth = (year: number, month: number) => new Date(year, month, 0).getDate();
 
     useEffect(() => {
         if (selectedDay !== null) {
             let adDate = '';
             let bsDate = '';
+
             try {
                 if (calendarType === 'AD') {
                     adDate = `${adYear}-${String(adMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                    bsDate = ADToBS(adDate);
+                    const bsObj = convertADToBS(adDate);
+                    if (!bsObj) throw new Error('Invalid AD date');
+                    bsDate = `${bsObj.year}-${String(bsObj.month).padStart(2, '0')}-${String(bsObj.day).padStart(2, '0')}`;
+
+                    console.log("🚀 ~ useEffect ~ adDate:", adDate);
                     setInputValue(`${adMonths[adMonth - 1]} ${selectedDay}, ${adYear}`);
                 } else {
                     bsDate = `${bsYear}-${String(bsMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                    adDate = BSToAD(bsDate);
+                    adDate = convertBSToAD(bsYear, bsMonth, selectedDay) || '';
+                    console.log("🚀 ~ useEffect ~ adDate:", adDate);
                     setInputValue(`${months[bsMonth - 1]} ${selectedDay}, ${bsYear}`);
                 }
-                onChange?.({ target: {name, value: { ad: dynamicDate ? adDate : '', bs: bsDate } }});
-            } catch {
+
+                onChange?.({
+                    target: {
+                        name,
+                        value: {
+                            ad: dynamicDate ? adDate : '',
+                            bs: bsDate,
+                        },
+                    },
+                });
+            } catch (error) {
                 setInputValue('');
-                onChange?.({ target: {name, value: { ad: '', bs: '' }} });
+                onChange?.({ target: { name, value: { ad: '', bs: '' } } });
             }
         } else {
             setInputValue('');
-            onChange?.({ target: { name, value: { ad: '', bs: '' } }});
+            onChange?.({ target: { name, value: { ad: '', bs: '' } } });
         }
     }, [selectedDay, calendarType]);
 
     useEffect(() => {
-        if (!formValues) return;
+        if (formValues) {
+            const bs = formValues[name];
+            if (calendarType === 'BS' && bs) {
+                const [year, month, day] = bs.split('-').map(Number);
+                if (year && month && day) {
+                    setBSYear(year);
+                    setBSMonth(month);
+                    setSelectedDay(day);
+                }
+            }
 
-        const bs = formValues[name];
-        if (calendarType === 'BS' && bs) {
-            const [year, month, day] = bs.split('-').map(Number);
-            if (year && month && day) {
-                setBSYear(year);
-                setBSMonth(month);
-                setSelectedDay(day);
+            const ad = formValues?.date2;
+            if (calendarType === 'AD' && ad) {
+                const [year, month, day] = ad.split('-').map(Number);
+                if (year && month && day) {
+                    setADYear(year);
+                    setADMonth(month);
+                    setSelectedDay(day);
+                }
             }
         }
+        return;
 
-        const ad = formValues?.date2;
-        if (calendarType === 'AD' && ad) {
-            const [year, month, day] = ad.split('-').map(Number);
-            if (year && month && day) {
-                setADYear(year);
-                setADMonth(month);
-                setSelectedDay(day);
-            }
-        }
-    }, [calendarType]);
+    }, [calendarType, formValues]);
 
 
     const isDaySelectable = (day: number) => {

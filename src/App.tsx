@@ -46,11 +46,7 @@ const App: React.FC = () => {
               setFieldValue('date1', val?.target?.value?.bs || '');
               setFieldValue('date2', val?.target?.value?.ad || '');
             }}            
-            formValues={
-              values.date1 && values.date2
-                ? { date1: values.date1, date2: values.date2 }
-                : undefined
-            }
+            // formValues={values.date1 && values.date2 && { date1: values.date1, date2: values.date2 }}
           />
 
           <button type="submit" style={{ marginTop: '1rem' }}>Submit</button>

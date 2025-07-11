@@ -3,11 +3,9 @@ import { BaseMonthDaysByYear } from "./bsYear";
 // Define type for BS date with year, month, day
 type BSDATE = { year: number; month: number; day: number };
 
-// Reference point: 2000-01-01 BS = 1943-04-14 AD
-const bsStartYear = 2000;
-const bsStartMonth = 1;
-const bsStartDay = 1;
-const adStartDate = new Date("1943-04-14");
+// Reference point: 1990-01-01 BS = 1943-04-13 AD
+const bsStartYear = 1990;
+const adStartDate = new Date("1933-04-13");
 
 // Precompute cumulative days to start of each year from 2000-01-01 BS
 const yearCumulativeDays: Map<number, number> = new Map();
@@ -35,66 +33,50 @@ function formatDate(d: Date): string {
 
 // Convert AD date string (YYYY-MM-DD) to BS date
 export function convertADToBS(adDateStr: string): BSDATE | undefined {
-  // Parse input AD date string
   const adDate = new Date(adDateStr);
-  if (isNaN(adDate.getTime())) {
-    return undefined; // Invalid date
-  }
+  if (isNaN(adDate.getTime())) return undefined;
 
-  // Calculate days elapsed from reference date (1943-04-14)
   const daysDifference = Math.floor((adDate.getTime() - adStartDate.getTime()) / 86400000);
+  if (daysDifference < 0) return undefined;
 
-  // Handle dates before reference point
-  if (daysDifference < 0) {
-    return undefined; // Date before 1943-04-14
-  }
-
-  // Binary search to find the BS year
+  // Find BS year using binary search
   let left = bsStartYear;
   let right = 2099;
   let bsYear = bsStartYear;
+
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
-    const yearStartDays = yearCumulativeDays.get(mid) || Infinity;
-    const nextYearStartDays = yearCumulativeDays.get(mid + 1) || Infinity;
+    const yearStart = yearCumulativeDays.get(mid) ?? Infinity;
+    const nextYearStart = yearCumulativeDays.get(mid + 1) ?? Infinity;
 
-    // Check if daysDifference falls in this year
-    if (yearStartDays <= daysDifference && daysDifference < nextYearStartDays) {
+    if (yearStart <= daysDifference && daysDifference < nextYearStart) {
       bsYear = mid;
       break;
     }
-    // Adjust search range
-    if (yearStartDays > daysDifference) {
+
+    if (yearStart > daysDifference) {
       right = mid - 1;
     } else {
       left = mid + 1;
     }
   }
 
-  // If year not found or data unavailable
-  if (!BaseMonthDaysByYear[bsYear]) {
-    return undefined; // Year out of range
-  }
+  const yearStartDays = yearCumulativeDays.get(bsYear) ?? 0;
+  let remainingDays = daysDifference - yearStartDays;
 
-  // Find month and day within the year
-  let remainingDays = daysDifference - (yearCumulativeDays.get(bsYear) || 0);
   let bsMonth = 1;
-  while (remainingDays >= BaseMonthDaysByYear[bsYear][bsMonth] && bsMonth <= 12) {
+  while (bsMonth <= 12 && remainingDays >= (BaseMonthDaysByYear[bsYear]?.[bsMonth] ?? 0)) {
     remainingDays -= BaseMonthDaysByYear[bsYear][bsMonth];
     bsMonth++;
   }
 
-  // If remainingDays is negative or month exceeds 12, date is invalid
-  if (bsMonth > 12 || remainingDays < 0) {
-    return undefined;
-  }
+  if (bsMonth > 12 || remainingDays < 0) return undefined;
 
-  // Calculate day (1-based indexing)
   const bsDay = remainingDays + 1;
 
-  // Return BS date
   return { year: bsYear, month: bsMonth, day: bsDay };
 }
+
 
 // Convert BS date to AD date string (YYYY-MM-DD)
 export function convertBSToAD(bsYear: number, bsMonth: number, bsDay: number): string | undefined {
@@ -115,7 +97,7 @@ export function convertBSToAD(bsYear: number, bsMonth: number, bsDay: number): s
   for (let m = 1; m < bsMonth; m++) {
     totalDays += BaseMonthDaysByYear[bsYear][m];
   }
-  totalDays += bsDay - 1; // Adjust for 1-based day indexing
+  totalDays += bsDay; // Adjust for 1-based day indexing
 
   // Calculate AD date by adding days to reference date
   const adDate = new Date(adStartDate);
