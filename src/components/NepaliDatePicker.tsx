@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getDaysInMonth, availableYears } from '../utils/calenderUtils';
-import { ADToBS, BSToAD } from 'bikram-sambat-js';
-import { NepaliCalendarProps } from '../types/types';
+import { CalendarType, NepaliCalendarProps } from '../types/types';
 import { getBSStartDay } from '../utils/calenderStartDay';
 import { days, adDays } from '../constants/days';
 import { months, adMonths } from '../constants/months';
@@ -9,16 +8,22 @@ import { convertADToBS, convertBSToAD } from '../utils/dateConversion';
 
 export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     label,
+    labelProps,
     name = 'date',
     maxAge,
     maxDate,
     variant = 'light',
     selectTodayDate = false,
-    dynamicDate = false,
+    dynamicDate = ["BS"],
     size = 6,
     formValues,
     onChange,
 }) => {
+    const getInitialCalendarType = (dynamicDate?: CalendarType[]): CalendarType => {
+        if (dynamicDate?.includes('AD') && !dynamicDate.includes('BS')) return 'AD';
+        return 'BS';
+      };
+      const isDynamic = dynamicDate.includes("AD") && dynamicDate.includes("BS");
     const getCurrentADDate = () => {
         const today = new Date();
         return {
@@ -40,7 +45,7 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     const currentADDate = getCurrentADDate();
     const currentBSDate = getCurrentBSDate();
 
-    const [calendarType, setCalendarType] = useState<'AD' | 'BS'>('BS');
+    const [calendarType, setCalendarType] = useState<CalendarType>(() => getInitialCalendarType(dynamicDate));
     const [adYear, setADYear] = useState(currentADDate.year);
     const [adMonth, setADMonth] = useState(currentADDate.month);
     const [bsYear, setBSYear] = useState(currentBSDate.year);
@@ -87,13 +92,10 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                     const bsObj = convertADToBS(adDate);
                     if (!bsObj) throw new Error('Invalid AD date');
                     bsDate = `${bsObj.year}-${String(bsObj.month).padStart(2, '0')}-${String(bsObj.day).padStart(2, '0')}`;
-
-                    console.log("🚀 ~ useEffect ~ adDate:", adDate);
                     setInputValue(`${adMonths[adMonth - 1]} ${selectedDay}, ${adYear}`);
                 } else {
                     bsDate = `${bsYear}-${String(bsMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
                     adDate = convertBSToAD(bsYear, bsMonth, selectedDay) || '';
-                    console.log("🚀 ~ useEffect ~ adDate:", adDate);
                     setInputValue(`${months[bsMonth - 1]} ${selectedDay}, ${bsYear}`);
                 }
 
@@ -161,42 +163,6 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
         return compare(maxAgeObj) && compare(maxDateObj);
     };
 
-
-
-    // for showing emply calender cell in month
-    // const totalDays = calendarType === 'AD'
-    //     ? getADDaysInMonth(adYear, adMonth)
-    //     : getDaysInMonth(bsYear, bsMonth);
-
-    // const startDay = calendarType === 'AD'
-    //     ? new Date(adYear, adMonth - 1, 1).getDay()
-    //     : getBSStartDay(bsYear, bsMonth);
-
-    // const daysArray = [];
-
-    // for (let i = 0; i < startDay; i++) {
-    //     daysArray.push(<div key={`empty-${i}`} className="calendar-day-cell empty" />);
-    // }
-
-    // for (let day = 1; day <= totalDays; day++) {
-    //     const isSelectable = isDaySelectable(day);
-    //     daysArray.push(
-    //         <div
-    //             key={day}
-    //             className={`calendar-day-cell ${selectedDay === day ? 'selected' : ''} ${!isSelectable ? 'disabled' : ''}`}
-    //             onClick={() => {
-    //                 if (isSelectable) {
-    //                     setSelectedDay(day);
-    //                     setCalendarVisible(false);
-    //                 }
-    //             }}
-    //         >
-    //             <p>{day}</p>
-    //         </div>
-    //     );
-    // }
-
-    //  for showing full calender
     const totalDays = getDaysInMonth(bsYear, bsMonth);
     const startDay = getBSStartDay(bsYear, bsMonth);
 
@@ -260,21 +226,48 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
         );
     }
 
+    const handleCalendarTypeChange = (newType: CalendarType) => {
+        if (newType === calendarType) return;
+      
+        if (selectedDay) {
+          if (newType === 'AD') {
+            const ad = convertBSToAD(bsYear, bsMonth, selectedDay);
+            if (ad) {
+              const [y, m, d] = ad.split('-').map(Number);
+              setADYear(y);
+              setADMonth(m);
+              setSelectedDay(d);
+            }
+          } else {
+            const adDate = `${adYear}-${String(adMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+            const bs = convertADToBS(adDate);
+            if (bs) {
+              setBSYear(bs.year);
+              setBSMonth(bs.month);
+              setSelectedDay(bs.day);
+            }
+          }
+        } else {
+          // no date selected, just switch type
+          setSelectedDay(null);
+        }
+      
+        setCalendarType(newType);
+      };
+
+      
     return (
         <div className={`calendar-wrapper ${variant} lg-${size}`}>
             <div className='calendar-wrapper-inner'>
-                {label && <label className="label-input">{label}</label>}
+                {label && <label {...(labelProps ? labelProps : { className: 'label-input' })}>{label}</label>}
                 <div className="main-textfield">
-                    {dynamicDate && (
+                    {isDynamic && (
                         <div className="calendar-radio-group">
                             <label className="calendar-radio-label">
                                 <input
                                     type="radio"
                                     checked={calendarType === 'BS'}
-                                    onChange={() => {
-                                        setCalendarType('BS');
-                                        setSelectedDay(null);
-                                    }}
+                                    onChange={() => handleCalendarTypeChange("BS")}
                                 />
                                 B.S.
                             </label>
@@ -282,10 +275,7 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                                 <input
                                     type="radio"
                                     checked={calendarType === 'AD'}
-                                    onChange={() => {
-                                        setCalendarType('AD');
-                                        setSelectedDay(null);
-                                    }}
+                                    onChange={() => handleCalendarTypeChange("AD")}
                                 />
                                 A.D.
                             </label>
@@ -495,6 +485,6 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
 
 export default {
     NepaliCalendar,
-    ADToBS,
-    BSToAD,
+    convertADToBS,
+    convertBSToAD,
 };

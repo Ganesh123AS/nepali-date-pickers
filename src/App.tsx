@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Formik, Form } from 'formik';
-import {NepaliCalendar} from './components/NepaliDatePicker';
+import { NepaliCalendar } from './components/NepaliDatePicker';
 import "./styles.css";
 
 const LOCAL_STORAGE_KEY = 'selectedDates';
@@ -35,18 +35,20 @@ const App: React.FC = () => {
       {({ values, setFieldValue, handleSubmit }) => (
         <Form onSubmit={handleSubmit}>
           <NepaliCalendar
-          name={"date1"}
+            name={"date1"}
             label="Select Date"
-            minDate="18"
+            labelProps={{ style: { fontSize: "2rem" } }}
+            maxAge="18"
             maxDate="futureDate"
             variant="light"
             size={4}
-            dynamicDate={true}
+            dynamicDate={["AD", "BS"]}
+            dynamicDateRange={true}
             onChange={(val: any) => {
               setFieldValue('date1', val?.target?.value?.bs || '');
               setFieldValue('date2', val?.target?.value?.ad || '');
-            }}            
-            // formValues={values.date1 && values.date2 && { date1: values.date1, date2: values.date2 }}
+            }}
+            formValues={values.date1 && values.date2 && { date1: values.date1, date2: values.date2 }}
           />
 
           <button type="submit" style={{ marginTop: '1rem' }}>Submit</button>
