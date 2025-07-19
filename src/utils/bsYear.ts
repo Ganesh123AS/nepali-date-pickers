@@ -1,4 +1,25 @@
+import { validateMultipleYears } from "../validate/test";
 import {
+    baseMonthDays1970,
+    baseMonthDays1971,
+    baseMonthDays1972,
+    baseMonthDays1973,
+    baseMonthDays1974,
+    baseMonthDays1975,
+    baseMonthDays1976,
+    baseMonthDays1977,
+    baseMonthDays1978,
+    baseMonthDays1979,
+    baseMonthDays1980,
+    baseMonthDays1981,
+    baseMonthDays1982,
+    baseMonthDays1983,
+    baseMonthDays1984,
+    baseMonthDays1985,
+    baseMonthDays1986,
+    baseMonthDays1987,
+    baseMonthDays1988,
+    baseMonthDays1989,
     baseMonthDays1990,
     baseMonthDays1991,
     baseMonthDays1992,
@@ -121,50 +142,27 @@ import {
 } from "./bsMonths";
 
 export const BaseMonthDaysByYear: Record<number, Record<number, number>> = {
+    1970: baseMonthDays1970,
+    1971: baseMonthDays1971,
+    1972: baseMonthDays1972,
+    1973: baseMonthDays1973,
+    1974: baseMonthDays1974,
+    1975: baseMonthDays1975,
+    1976: baseMonthDays1976,
+    1977: baseMonthDays1977,
+    1978: baseMonthDays1978,
+    1979: baseMonthDays1979,
 
-    // 1950: baseMonth365DaysDefault,
-    // 1951: baseMonth365DaysDefault,
-    // 1952: baseMonth365DaysDefault,
-    // 1953: Days366Default,                   // leap year
-    // 1954: baseMonth365DaysDefault,
-    // 1955: baseMonth365DaysDefault,
-    // 1956: baseMonth365DaysDefault,
-    // 1957: Days366Default,                   // leap year
-    // 1958: baseMonth365DaysDefault,
-    // 1959: baseMonth365DaysDefault,
-
-    // 1960: baseMonth365DaysDefault,
-    // 1961: Days366Default,                   // leap year
-    // 1962: baseMonth365DaysDefault,
-    // 1963: baseMonth365DaysDefault,
-    // 1964: baseMonth365DaysDefault,
-    // 1965: Days366Default,                   // leap year
-    // 1966: baseMonth365DaysDefault,
-    // 1967: baseMonth365DaysDefault,
-    // 1968: baseMonth365DaysDefault,
-    // 1969: Days366Default,                   // leap year
-
-    // 1970: baseMonth365DaysDefault,
-    // 1971: baseMonth365DaysDefault,
-    // 1972: baseMonth365DaysDefault,
-    // 1973: Days366Default,                   // leap year
-    // 1974: baseMonth365DaysDefault,
-    // 1975: baseMonth365DaysDefault,
-    // 1976: baseMonth365DaysDefault,
-    // 1977: Days366Default,                   // leap year
-    // 1978: baseMonth365DaysDefault,
-    // 1979: baseMonth365DaysDefault,
-
-    // 1980: baseMonth365DaysDefault,
-    // 1981: Days366Default,                   // leap year
-    // 1982: baseMonth365DaysDefault,
-    // 1983: baseMonth365DaysDefault,
-    // 1984: baseMonth365DaysDefault,
-    // 1985: Days366Default,                   // leap year
-    // 1986: baseMonth365DaysDefault,
-    // 1987: baseMonth365DaysDefault,
-    // 1988: baseMonth365DaysDefault,
-    // 1989: Days366Default,                   // leap year
+    1980: baseMonthDays1980,
+    1981: baseMonthDays1981,                   // leap year
+    1982: baseMonthDays1982,
+    1983: baseMonthDays1983,
+    1984: baseMonthDays1984,
+    1985: baseMonthDays1985,                   // leap year
+    1986: baseMonthDays1986,
+    1987: baseMonthDays1987,
+    1988: baseMonthDays1988,
+    1989: baseMonthDays1989,                   // leap year
 
 
     1990: baseMonthDays1990,
@@ -261,7 +259,6 @@ export const BaseMonthDaysByYear: Record<number, Record<number, number>> = {
     2068: baseMonthDays2068,
     2069: baseMonthDays2069,                   // leap year
 
-
     2070: baseMonthDays2070,
     2071: baseMonthDays2071,
     2072: baseMonthDays2072,
@@ -272,7 +269,6 @@ export const BaseMonthDaysByYear: Record<number, Record<number, number>> = {
     2077: baseMonthDays2077,                // leap year
     2078: baseMonthDays2078,
     2079: baseMonthDays2079,
-
 
     2080: baseMonthDays2080,
     2081: baseMonthDays2081,                // leap year
@@ -296,3 +292,6 @@ export const BaseMonthDaysByYear: Record<number, Record<number, number>> = {
     2098: baseMonthDays2098,
     2099: baseMonthDays2099,
 };
+
+validateMultipleYears({ baseMonthDays1977 });
+validateMultipleYears({ baseMonthDays1975 });

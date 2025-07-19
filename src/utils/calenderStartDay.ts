@@ -4,9 +4,9 @@ export const getBSStartDay = (
   targetYear: number,
   targetMonth: number
 ): number => {
-  const baseYear = 2000;
+  const baseYear = 1970;
   const baseMonth = 1;
-  const baseDayIndex = 3;
+  const baseDayIndex = 0;
 
   let dayOffset = 0;
 

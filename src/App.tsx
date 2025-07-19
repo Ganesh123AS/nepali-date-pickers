@@ -37,19 +37,20 @@ const App: React.FC = () => {
           <NepaliCalendar
             name={"date1"}
             label="Select Date"
-            labelProps={{ style: { fontSize: "2rem" } }}
-            maxAge="18"
+            labelProps={{ style: { fontSize: "0.8rem" } }}
+            // maxAge="18"
             maxDate="futureDate"
+            isRequired={true}
             variant="light"
-            size={4}
             dynamicDate={["AD", "BS"]}
-            dynamicDateRange={true}
+            selectTodayDate={true}
             onChange={(val: any) => {
               setFieldValue('date1', val?.target?.value?.bs || '');
               setFieldValue('date2', val?.target?.value?.ad || '');
             }}
             formValues={values.date1 && values.date2 && { date1: values.date1, date2: values.date2 }}
           />
+          
 
           <button type="submit" style={{ marginTop: '1rem' }}>Submit</button>
 

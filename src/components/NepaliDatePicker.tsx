@@ -4,26 +4,30 @@ import { CalendarType, NepaliCalendarProps } from '../types/types';
 import { getBSStartDay } from '../utils/calenderStartDay';
 import { days, adDays } from '../constants/days';
 import { months, adMonths } from '../constants/months';
-import { convertADToBS, convertBSToAD } from '../utils/dateConversion';
+import RenderCells from './RenderCells';
+import DynamicIcons from './DynamicIcons';
+import { convertADtoBS, convertBStoAD } from '../utils/dateConversion';
 
 export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     label,
     labelProps,
+    isRequired,
     name = 'date',
     maxAge,
     maxDate,
     variant = 'light',
     selectTodayDate = false,
     dynamicDate = ["BS"],
-    size = 6,
+    size = 12,
+    icon,
     formValues,
     onChange,
 }) => {
     const getInitialCalendarType = (dynamicDate?: CalendarType[]): CalendarType => {
         if (dynamicDate?.includes('AD') && !dynamicDate.includes('BS')) return 'AD';
         return 'BS';
-      };
-      const isDynamic = dynamicDate.includes("AD") && dynamicDate.includes("BS");
+    };
+    const isDynamic = dynamicDate.includes("AD") && dynamicDate.includes("BS");
     const getCurrentADDate = () => {
         const today = new Date();
         return {
@@ -36,7 +40,7 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     const getCurrentBSDate = () => {
         const today = new Date();
         const gregorianDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        const bsDate = convertADToBS(gregorianDate);
+        const bsDate = convertADtoBS(gregorianDate);
         if (!bsDate) return { year: 0, month: 0, day: 0 };
         return { year: bsDate.year, month: bsDate.month, day: bsDate.day };
     };
@@ -89,13 +93,13 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
             try {
                 if (calendarType === 'AD') {
                     adDate = `${adYear}-${String(adMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                    const bsObj = convertADToBS(adDate);
+                    const bsObj = convertADtoBS(adDate);
                     if (!bsObj) throw new Error('Invalid AD date');
                     bsDate = `${bsObj.year}-${String(bsObj.month).padStart(2, '0')}-${String(bsObj.day).padStart(2, '0')}`;
                     setInputValue(`${adMonths[adMonth - 1]} ${selectedDay}, ${adYear}`);
                 } else {
                     bsDate = `${bsYear}-${String(bsMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-                    adDate = convertBSToAD(bsYear, bsMonth, selectedDay) || '';
+                    adDate = convertBStoAD(bsYear, bsMonth, selectedDay) || '';
                     setInputValue(`${months[bsMonth - 1]} ${selectedDay}, ${bsYear}`);
                 }
 
@@ -163,103 +167,40 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
         return compare(maxAgeObj) && compare(maxDateObj);
     };
 
-    const totalDays = getDaysInMonth(bsYear, bsMonth);
-    const startDay = getBSStartDay(bsYear, bsMonth);
-
-    let prevMonth = bsMonth - 1;
-    let prevYear = bsYear;
-    if (prevMonth < 1) {
-        prevMonth = 12;
-        prevYear -= 1;
-    }
-    const prevMonthDays = getDaysInMonth(prevYear, prevMonth);
-
-    let nextMonth = bsMonth + 1;
-    let nextYear = bsYear;
-    if (nextMonth > 12) {
-        nextMonth = 1;
-        nextYear += 1;
-    }
-
-    const cells = [];
-
-    for (let i = startDay - 1; i >= 0; i--) {
-        const day = prevMonthDays - i;
-        cells.push(
-            <div key={`prev-${day}`} className="calendar-day-cell disabled other-month">
-                <p>{day}</p>
-            </div>
-        );
-    }
-
-    for (let day = 1; day <= totalDays; day++) {
-        const isSelectable = isDaySelectable(day);
-        const weekdayIndex = (startDay + day - 1) % 7;
-        const isSaturday = weekdayIndex === 6;
-
-        cells.push(
-            <div
-                key={`curr-${day}`}
-                className={`calendar-day-cell 
-              ${selectedDay === day ? 'selected' : ''} 
-              ${!isSelectable ? 'disabled' : ''} 
-              ${isSaturday ? 'saturday' : ''}`}
-                onClick={() => {
-                    if (isSelectable) {
-                        setSelectedDay(day);
-                        setCalendarVisible(false);
-                    }
-                }}
-            >
-                <p>{day}</p>
-            </div>
-        );
-    }
-
-    const totalGrid = 42;
-    const remainingCells = totalGrid - cells.length;
-    for (let i = 1; i <= remainingCells; i++) {
-        cells.push(
-            <div key={`next-${i}`} className="calendar-day-cell disabled other-month">
-                <p>{i}</p>
-            </div>
-        );
-    }
-
     const handleCalendarTypeChange = (newType: CalendarType) => {
         if (newType === calendarType) return;
-      
         if (selectedDay) {
-          if (newType === 'AD') {
-            const ad = convertBSToAD(bsYear, bsMonth, selectedDay);
-            if (ad) {
-              const [y, m, d] = ad.split('-').map(Number);
-              setADYear(y);
-              setADMonth(m);
-              setSelectedDay(d);
+            if (newType === 'AD') {
+                const ad = convertBStoAD(bsYear, bsMonth, selectedDay);
+                if (ad) {
+                    const [y, m, d] = ad.split('-').map(Number);
+                    setADYear(y);
+                    setADMonth(m);
+                    setSelectedDay(d);
+                }
+            } else {
+                const adDate = `${adYear}-${String(adMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+                const bs = convertADtoBS(adDate);
+                if (bs) {
+                    setBSYear(bs.year);
+                    setBSMonth(bs.month);
+                    setSelectedDay(bs.day);
+                }
             }
-          } else {
-            const adDate = `${adYear}-${String(adMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-            const bs = convertADToBS(adDate);
-            if (bs) {
-              setBSYear(bs.year);
-              setBSMonth(bs.month);
-              setSelectedDay(bs.day);
-            }
-          }
         } else {
-          // no date selected, just switch type
-          setSelectedDay(null);
+            setSelectedDay(null);
         }
-      
         setCalendarType(newType);
-      };
+    };
 
-      
+
     return (
-        <div className={`calendar-wrapper ${variant} lg-${size}`}>
+        <div className={`calendar-wrapper lg-${size}`}>
             <div className='calendar-wrapper-inner'>
-                {label && <label {...(labelProps ? labelProps : { className: 'label-input' })}>{label}</label>}
+                {label && <label {...(labelProps ? labelProps : { className: 'label-input' })}>
+                    {label}
+                    {isRequired && <span className='label-is-required'>*</span>}
+                </label>}
                 <div className="main-textfield">
                     {isDynamic && (
                         <div className="calendar-radio-group">
@@ -281,6 +222,7 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                             </label>
                         </div>
                     )}
+
                     <div className="calendar-input-wrapper">
                         <input
                             type="text"
@@ -290,22 +232,14 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                             className="calendar-input"
                         />
                         <span className="calendar-input-icon">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" />
-                            </svg>
+                            {icon ? icon : <DynamicIcons type={'calendar'} />}
                         </span>
                     </div>
                 </div>
             </div>
 
             {isCalendarVisible && (
-                <div className='calendar-wrapper-new'>
+                <div className={`calendar-wrapper-new ${variant}`}>
                     <div className="calendar-container">
                         <div className="calendar-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <div className='calender-header-button'>
@@ -331,9 +265,7 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                                         setSelectedDay(null);
                                     }}
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M12.707 14.707a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 0-1.414l4-4a1 1 0 1 1 1.414 1.414L10.414 10l2.293 2.293a1 1 0 0 1 0 1.414z" />
-                                    </svg>
+                                    {icon ? icon : <DynamicIcons type={'left'} />}
                                 </button>
                                 <select
                                     value={calendarType === 'AD' ? adMonth : bsMonth}
@@ -385,9 +317,7 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                                         setSelectedDay(null);
                                     }}
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 0 1 0-1.414L9.586 11 7.293 8.707a1 1 0 0 1 1.414-1.414l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414 0z" />
-                                    </svg>
+                                    {icon ? icon : <DynamicIcons type={'right'} />}
                                 </button>
                             </div>
                         </div>
@@ -396,77 +326,23 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                             {(calendarType === 'AD' ? adDays : days).map((d, i) => (
                                 <div key={i} className="calendar-day-name">{d}</div>
                             ))}
-                            {/* show calender days only */}
-                            {/* {daysArray} */}
-                            {(() => {
-                                const isBS = calendarType === 'BS';
-
-                                const year = isBS ? bsYear : adYear;
-                                const month = isBS ? bsMonth : adMonth;
-                                const getDays = isBS ? getDaysInMonth : getADDaysInMonth;
-                                const startDay = isBS ? getBSStartDay(bsYear, bsMonth) : new Date(adYear, adMonth - 1, 1).getDay();
-                                const totalDays = getDays(year, month);
-
-                                let prevMonth = month - 1;
-                                let prevYear = year;
-                                if (prevMonth < 1) {
-                                    prevMonth = 12;
-                                    prevYear -= 1;
+                            <RenderCells
+                                year={calendarType === 'AD' ? adYear : bsYear}
+                                month={calendarType === 'AD' ? adMonth : bsMonth}
+                                getDays={calendarType === 'AD' ? getADDaysInMonth : getDaysInMonth}
+                                startDay={calendarType === 'AD' ? new Date(adYear, adMonth - 1, 1).getDay() : getBSStartDay(bsYear, bsMonth)}
+                                totalDays={
+                                    calendarType === 'AD'
+                                        ? getADDaysInMonth(adYear, adMonth)
+                                        : getDaysInMonth(bsYear, bsMonth)
                                 }
-                                const prevMonthDays = getDays(prevYear, prevMonth);
-
-                                let nextMonth = month + 1;
-                                let nextYear = year;
-                                if (nextMonth > 12) {
-                                    nextMonth = 1;
-                                    nextYear += 1;
-                                }
-
-                                const cells = [];
-
-                                for (let i = startDay - 1; i >= 0; i--) {
-                                    const day = prevMonthDays - i;
-                                    cells.push(
-                                        <div key={`prev-${day}`} className="calendar-day-cell disabled other-month">
-                                            <p>{day}</p>
-                                        </div>
-                                    );
-                                }
-
-                                for (let day = 1; day <= totalDays; day++) {
-                                    const isSelectable = isDaySelectable(day);
-                                    const weekdayIndex = (startDay + day - 1) % 7;
-                                    const isSaturday = weekdayIndex === 6;
-
-                                    cells.push(
-                                        <div
-                                            key={`curr-${day}`}
-                                            className={`calendar-day-cell ${selectedDay === day ? 'selected' : ''} ${!isSelectable ? 'disabled' : ''} ${isSaturday ? 'saturday' : ''}`}
-                                            onClick={() => {
-                                                if (isSelectable) {
-                                                    setSelectedDay(day);
-                                                    setCalendarVisible(false);
-                                                }
-                                            }}
-                                        >
-                                            <p>{day}</p>
-                                        </div>
-                                    );
-                                }
-
-                                const totalGrid = 42;
-                                const remaining = totalGrid - cells.length;
-                                for (let i = 1; i <= remaining; i++) {
-                                    cells.push(
-                                        <div key={`next-${i}`} className="calendar-day-cell disabled other-month">
-                                            <p>{i}</p>
-                                        </div>
-                                    );
-                                }
-
-                                return cells;
-                            })()}
-
+                                selectedDay={selectedDay}
+                                isDaySelectable={isDaySelectable}
+                                onDayClick={(day) => {
+                                    setSelectedDay(day);
+                                    setCalendarVisible(false);
+                                }}
+                            />
                         </div>
                         {selectedDay !== null && (
                             <div className="calendar-selected-info">
@@ -484,7 +360,7 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
 };
 
 export default {
-    NepaliCalendar,
-    convertADToBS,
-    convertBSToAD,
+    NepaliCalendar
 };
+
+export { convertADtoBS, convertBStoAD };

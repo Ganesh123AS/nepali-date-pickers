@@ -1,9 +1,158 @@
 import { validateMultipleYears } from "../validate/test";
 
+// export const baseMonthDays1970: Record<number, number> = Object.fromEntries([
+//     ...[].map(m => [m, 29]),
+//     ...[].map(m => [m, 30]),
+//     ...[].map(m => [m, 31]),
+//     ...[].map(m => [m, 32]),
+// ]);
+
+export const baseMonthDays1970: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 4, 5, 6].map(m => [m, 31]),
+    ...[3].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1971: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[6, 7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 4].map(m => [m, 31]),
+    ...[3, 5].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1972: Record<number, number> = Object.fromEntries([
+    ...[9, 10].map(m => [m, 29]),
+    ...[6, 7, 8, 11].map(m => [m, 30]),
+    ...[1, 3, 5, 12].map(m => [m, 31]),
+    ...[2, 4].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1973: Record<number, number> = Object.fromEntries([
+    ...[9, 11].map(m => [m, 29]),
+    ...[1, 6, 7, 8, 10].map(m => [m, 30]),
+    ...[3, 5, 12].map(m => [m, 31]),
+    ...[2, 4].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1974: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 4, 5, 6].map(m => [m, 31]),
+    ...[3].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1975: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[5, 7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 6].map(m => [m, 31]),
+    ...[3, 4].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1976: Record<number, number> = Object.fromEntries([
+    ...[9, 10].map(m => [m, 29]),
+    ...[6, 7, 8, 11].map(m => [m, 30]),
+    ...[1, 3, 5, 12].map(m => [m, 31]),
+    ...[2, 4].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1977: Record<number, number> = Object.fromEntries([
+    ...[7, 9].map(m => [m, 29]),
+    ...[5, 8, 10, 11, 12].map(m => [m, 30]),
+    ...[1, 3, 6].map(m => [m, 31]),
+    ...[2, 4].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1978: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 4, 5, 6].map(m => [m, 31]),
+    ...[3].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1979: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[6, 7, 9,11, 12].map(m => [m, 30]),
+    ...[1, 2, 5].map(m => [m, 31]),
+    ...[3, 4].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1980: Record<number, number> = Object.fromEntries([
+    ...[9, 10].map(m => [m, 29]),
+    ...[6, 7, 8, 11].map(m => [m, 30]),
+    ...[1, 3, 5, 12].map(m => [m, 31]),
+    ...[2, 4].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1981: Record<number, number> = Object.fromEntries([
+    ...[7, 10].map(m => [m, 29]),
+    ...[8, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 3, 5, 6].map(m => [m, 31]),
+    ...[4].map(m => [m, 32]),
+]);
+
+export const baseMonthDays1982: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 4, 5, 6].map(m => [m, 31]),
+    ...[3].map(m => [m, 32]),
+]);
 
 
+export const baseMonthDays1983: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[6, 7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 5].map(m => [m, 31]),
+    ...[3, 4].map(m => [m, 32]),
+]);
 
 
+export const baseMonthDays1984: Record<number, number> = Object.fromEntries([
+    ...[9, 10].map(m => [m, 29]),
+    ...[6, 7, 8, 11].map(m => [m, 30]),
+    ...[1, 3, 5, 12].map(m => [m, 31]),
+    ...[2, 4].map(m => [m, 32]),
+]);
+
+
+export const baseMonthDays1985: Record<number, number> = Object.fromEntries([
+    ...[7, 10].map(m => [m, 29]),
+    ...[8, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 3, 5, 6].map(m => [m, 31]),
+    ...[4].map(m => [m, 32]),
+]);
+
+
+export const baseMonthDays1986: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 4, 5, 6].map(m => [m, 31]),
+    ...[3].map(m => [m, 32]),
+]);
+
+
+export const baseMonthDays1987: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[6, 7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 3, 5].map(m => [m, 31]),
+    ...[2, 4].map(m => [m, 32]),
+]);
+
+
+export const baseMonthDays1988: Record<number, number> = Object.fromEntries([
+    ...[9, 10].map(m => [m, 29]),
+    ...[6, 7, 8, 11].map(m => [m, 30]),
+    ...[1, 3, 5, 12].map(m => [m, 31]),
+    ...[2, 4].map(m => [m, 32]),
+]);
+
+
+export const baseMonthDays1989: Record<number, number> = Object.fromEntries([
+    ...[8, 10].map(m => [m, 29]),
+    ...[7, 9, 11, 12].map(m => [m, 30]),
+    ...[1, 2, 3, 5, 6].map(m => [m, 31]),
+    ...[4].map(m => [m, 32]),
+]);
 
 // bs[1990] = [1:31, 2:31, 3:32, 4:31, 5:31, 6:31, 7:30, 8:29, 9:30, 10:29, 11:30, 12:30];
 export const baseMonthDays1990: Record<number, number> = Object.fromEntries([
