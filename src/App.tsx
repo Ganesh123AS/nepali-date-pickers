@@ -38,12 +38,13 @@ const App: React.FC = () => {
             name={"date1"}
             label="Select Date"
             labelProps={{ style: { fontSize: "0.8rem" } }}
-            // maxAge="18"
-            maxDate="futureDate"
+            // minYears="18"
+            // disableFuture={true}
             isRequired={true}
-            variant="light"
+            theme="light"
             dynamicDate={["AD", "BS"]}
-            selectTodayDate={true}
+            variant={"outlined"}
+            // selectTodayDate={true}
             onChange={(val: any) => {
               setFieldValue('date1', val?.target?.value?.bs || '');
               setFieldValue('date2', val?.target?.value?.ad || '');

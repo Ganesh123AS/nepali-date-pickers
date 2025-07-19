@@ -1,12 +1,14 @@
 export type CalendarType = 'AD' | 'BS';
-export type variantType = 'light' | 'standard' | 'basic';
+export type variantType = 'outlined' | 'standard' | 'filled';
+export type themeType = 'light' | 'standard' | 'basic';
 export interface NepaliCalendarProps {
   label?: string;
   labelProps?: React.LabelHTMLAttributes<HTMLLabelElement>;
   // slotProps?: React.CSSProperties;
   name?: string;
-  maxAge?: string;
-  maxDate?: string;
+  minYears?: string;
+  disableFuture?: boolean;
+  theme?: themeType;
   variant?: variantType;
   selectTodayDate?: boolean;
   dynamicDate?: CalendarType[];

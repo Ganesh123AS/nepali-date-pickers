@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getDaysInMonth, availableYears } from '../utils/calenderUtils';
 import { CalendarType, NepaliCalendarProps } from '../types/types';
 import { getBSStartDay } from '../utils/calenderStartDay';
@@ -12,10 +12,11 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     label,
     labelProps,
     isRequired,
-    name = 'date',
-    maxAge,
-    maxDate,
-    variant = 'light',
+    name = 'Date',
+    minYears,
+    disableFuture,
+    theme = 'light',
+    variant,
     selectTodayDate = false,
     dynamicDate = ["BS"],
     size = 12,
@@ -23,6 +24,9 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     formValues,
     onChange,
 }) => {
+    const [focused, setFocused] = useState(false);
+    const calendarRef = useRef<HTMLDivElement | null>(null);
+
     const getInitialCalendarType = (dynamicDate?: CalendarType[]): CalendarType => {
         if (dynamicDate?.includes('AD') && !dynamicDate.includes('BS')) return 'AD';
         return 'BS';
@@ -60,8 +64,8 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     const [isCalendarVisible, setCalendarVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
 
-    const maxAgeObj = parseDateConstraint(maxAge, calendarType === 'AD');
-    const maxDateObj = parseDateConstraint(maxDate, calendarType === 'AD');
+    const maxAgeObj = parseDateConstraint(minYears, calendarType === 'AD');
+    const maxDateObj = disableFuture ? (calendarType === 'AD' ? getCurrentADDate() : getCurrentBSDate()) : null;
 
     function parseDateConstraint(constraint?: string, isAD: boolean = false) {
         if (!constraint) return null;
@@ -148,6 +152,18 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
 
     }, [calendarType, formValues]);
 
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+                setCalendarVisible(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const isDaySelectable = (day: number) => {
         const selectedDate = calendarType === 'AD'
@@ -195,9 +211,9 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
 
 
     return (
-        <div className={`calendar-wrapper lg-${size}`}>
+        <div className={`calendar-wrapper lg-${size}`} ref={calendarRef}>
             <div className='calendar-wrapper-inner'>
-                {label && <label {...(labelProps ? labelProps : { className: 'label-input' })}>
+                {variant !== 'outlined' && label && <label {...(labelProps ? labelProps : { className: 'label-input' })}>
                     {label}
                     {isRequired && <span className='label-is-required'>*</span>}
                 </label>}
@@ -224,22 +240,52 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                     )}
 
                     <div className="calendar-input-wrapper">
-                        <input
-                            type="text"
-                            readOnly
-                            value={inputValue}
-                            onClick={() => setCalendarVisible((prev) => !prev)}
-                            className="calendar-input"
-                        />
-                        <span className="calendar-input-icon">
-                            {icon ? icon : <DynamicIcons type={'calendar'} />}
-                        </span>
+                        {variant === "outlined" ? (
+                            <>
+                                <input
+                                    id={name}
+                                    type="text"
+                                    readOnly
+                                    value={inputValue}
+                                    onClick={() => setCalendarVisible((prev) => !prev)}
+                                    className={`calendar-input ${variant} ${inputValue ? 'has-value' : ''}`}
+                                    onFocus={() => setFocused(true)}
+                                    onBlur={() => setFocused(false)}
+                                />
+                                <label
+                                    htmlFor={name}
+                                    className={`calendar-floating-label ${variant} ${focused || inputValue ? 'float' : ''}`}
+                                >
+                                    {label}
+                                    {isRequired && <span className="label-is-required">*</span>}
+                                </label>
+                                <span className="calendar-input-icon">
+                                    {icon ? icon : <DynamicIcons type={'calendar'} />}
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <input
+                                    type="text"
+                                    readOnly
+                                    value={inputValue}
+                                    onClick={() => setCalendarVisible((prev) => !prev)}
+                                    className={`calendar-input ${variant} ${inputValue ? 'has-value' : ''}`}
+                                    onFocus={() => setFocused(true)}
+                                    onBlur={() => setFocused(false)}
+                                />
+                                <span className="calendar-input-icon">
+                                    {icon ? icon : <DynamicIcons type={'calendar'} />}
+                                </span>
+                            </>
+                        )}
+
                     </div>
                 </div>
             </div>
 
             {isCalendarVisible && (
-                <div className={`calendar-wrapper-new ${variant}`}>
+                <div className={`calendar-wrapper-new ${theme}`}>
                     <div className="calendar-container">
                         <div className="calendar-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <div className='calender-header-button'>
