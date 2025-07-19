@@ -43,7 +43,7 @@ const App: React.FC = () => {
             isRequired={true}
             theme="light"
             dynamicDate={["AD", "BS"]}
-            variant={"outlined"}
+            // variant={"outlined"}
             // selectTodayDate={true}
             onChange={(val: any) => {
               setFieldValue('date1', val?.target?.value?.bs || '');

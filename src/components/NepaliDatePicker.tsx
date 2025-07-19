@@ -213,10 +213,6 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
     return (
         <div className={`calendar-wrapper lg-${size}`} ref={calendarRef}>
             <div className='calendar-wrapper-inner'>
-                {variant !== 'outlined' && label && <label {...(labelProps ? labelProps : { className: 'label-input' })}>
-                    {label}
-                    {isRequired && <span className='label-is-required'>*</span>}
-                </label>}
                 <div className="main-textfield">
                     {isDynamic && (
                         <div className="calendar-radio-group">
@@ -240,6 +236,10 @@ export const NepaliCalendar: React.FC<NepaliCalendarProps> = ({
                     )}
 
                     <div className="calendar-input-wrapper">
+                        {variant !== 'outlined' && label && <label {...(labelProps ? labelProps : { className: 'label-input' })}>
+                            {label}
+                            {isRequired && <span className='label-is-required'>*</span>}
+                        </label>}
                         {variant === "outlined" ? (
                             <>
                                 <input
